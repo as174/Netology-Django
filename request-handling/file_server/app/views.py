@@ -2,7 +2,6 @@ import datetime
 import os
 from django.shortcuts import render
 
-
 def file_list(request, date=None):
     template_name = 'index.html'
 
@@ -10,6 +9,10 @@ def file_list(request, date=None):
         'files': [],
         'date': date
     }
+
+
+    if (date != None):
+        context['date'] = datetime.datetime.strptime(date, '%Y-%m-%d')
 
     files = os.listdir('files')
     for file in files:
@@ -20,10 +23,11 @@ def file_list(request, date=None):
         ctime = datetime.datetime.fromtimestamp(ctime_ts).date()
         mtime = datetime.datetime.fromtimestamp(mtime_ts).date()
         file_dict = {'name': file, 'ctime': ctime, 'mtime': mtime}
-        context['files'].append(file_dict)
+        ctime_date = ctime.strftime('%Y-%m-%d')
+        if (ctime_date == date) or (date == None):
+            context['files'].append(file_dict)
 
-    if (date != None):
-        context['date'] = datetime.datetime.strptime(date, '%Y-%m-%d' )
+
 
     return render(request, template_name, context)
 
